@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Annex War Room v2</title>
+<title>Annex War Room v12.1</title>
 <style>
 :root{
  --bg:#07111f;--panel:#0e1c2f;--panel2:#0a1727;--line:#233a56;--text:#f4f8fb;--muted:#9db2c9;
@@ -161,7 +161,7 @@ tr:hover{background:#122943}.player{font-weight:850}.meta{font-size:11px;color:v
 <body>
 <div class="app">
 <div class="topbar">
- <div class="brand"><div class="logo">AW</div><div><h1>Annex War Room <span class="badge green">v12</span></h1><div class="sub">2026 • 12 teams • Half-PPR • 1 flex • 5-pt passing TD</div></div></div>
+ <div class="brand"><div class="logo">AW</div><div><h1>Annex War Room <span class="badge green">v12.1</span></h1><div class="sub">2026 • 12 teams • Half-PPR • 1 flex • 5-pt passing TD</div></div></div>
  <div class="actions"><button class="btn" onclick="undoPick()">Undo</button><button class="btn" onclick="resetDraft()">Reset</button><button class="btn primary" onclick="simulateOpponentPick()">Simulate Opponent Pick</button></div>
 </div>
 <div class="nav"><button id="navDraft" class="navbtn active" onclick="showView('draft')">Draft Board</button><button id="navRB" class="navbtn" onclick="showView('rb')">RB Lab</button><button id="navWR" class="navbtn" onclick="showView('wr')">WR Lab</button><button id="navQB" class="navbtn" onclick="showView('qb')">QB Lab</button><button id="navTE" class="navbtn" onclick="showView('te')">TE Lab</button><button id="navST" class="navbtn" onclick="showView('st')">D/ST + K</button></div>
@@ -1126,7 +1126,26 @@ function decisionScore(p){
   return clamp(base+urgency,0,110);
 }
 function dyn(p){return decisionScore(p)}
-function draft(n,m){if(dset().has(n))return;state.drafted.push({name:n,mine:m});if(m)state.myPicks.push(n);renderDraft();updateDraftIntel();renderLiveGrid();renderClockPanel();renderRosterWarnings()}
+function draft(n,m){
+  if(dset().has(n))return false;
+  state.drafted.push({name:n,mine:!!m});
+  if(m)state.myPicks.push(n);
+  localStorage.setItem("annexWarRoomV11",JSON.stringify(state));
+  renderDraft();updateDraftIntel();renderLiveGrid();renderClockPanel();renderRosterWarnings();
+  return true;
+}
+function recordPick(n,m,btn){
+  try{
+    const ok=draft(n,m);
+    if(ok){
+      setRefreshStatus(`${m?"My pick":"Opponent pick"} recorded: ${n}`,"ok");
+    }
+  }catch(err){
+    console.error("Could not record pick",err);
+    setRefreshStatus(`Pick error: ${err.message}`,"err");
+    alert("Could not record the pick. Please refresh the page and try again.");
+  }
+}
 function undoPick(){let l=state.drafted.pop();if(l?.mine){let i=state.myPicks.lastIndexOf(l.name);if(i>=0)state.myPicks.splice(i,1)}renderDraft();updateDraftIntel();renderLiveGrid();renderClockPanel();renderRosterWarnings()}
 function resetDraft(){if(confirm("Reset all drafted players?")){state={drafted:[],myPicks:[],draftSlot:state.draftSlot||0,teamNames:state.teamNames||Array.from({length:12},(_,i)=>`Team ${i+1}`)};renderDraft();updateDraftIntel();renderLiveGrid();renderClockPanel();renderRosterWarnings()}}
 function simulateOpponentPick(){let a=players.filter(p=>!dset().has(p.name)).sort((a,b)=>a.rank-b.rank).slice(0,7);if(a.length)draft(a[Math.floor(Math.random()*a.length)].name,false)}
@@ -1146,7 +1165,7 @@ function renderDraft(){
  <td><span class="actiontag ${actionLabel(p).cls}">${actionLabel(p).text}</span></td>
  <td><span class="survive ${survivalLabel(p).cls}">${survivalLabel(p).txt}</span></td>
  <td><span class="badge ${p.risk>=30?"red":p.risk>=22?"yellow":"green"}">${p.risk>=30?"High":p.risk>=22?"Med":"Low"}</span></td><td>${p.notes}</td>
- <td>${ds.has(p.name)?"—":`<button class="smallbtn pick" onclick="draft(${JSON.stringify(p.name)},true)">Draft</button> <button class="smallbtn" onclick="draft(${JSON.stringify(p.name)},false)">Gone</button>`}</td></tr>`).join("");
+ <td>${ds.has(p.name)?"—":`<button type="button" class="smallbtn pick" onclick="recordPick(${JSON.stringify(p.name)},true,this)">Draft</button> <button type="button" class="smallbtn" onclick="recordPick(${JSON.stringify(p.name)},false,this)">Gone</button>`}</td></tr>`).join("");
  let best=players.filter(p=>!ds.has(p.name)).sort((a,b)=>dyn(b)-dyn(a)).slice(0,5);
  document.getElementById("recommendations").innerHTML=best.map((p,i)=>{
  let v=draftValueScore(p), pr=projectionScore(p), lw=leagueWinnerScore(p);
