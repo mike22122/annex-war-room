@@ -1,0 +1,34 @@
+{
+  "schema": "annex-war-room-v1",
+  "meta": {
+    "updated": "2026-08-24",
+    "updatedLabel": "Aug. 24, 2026 — evening refresh",
+    "sources": ["Yahoo NFL training-camp injury tracker, Aug. 24","FantasyPros half-PPR rankings / player news, Aug. 21-24","Reuters NFL injury / transaction reporting, Aug. 23-24","Preseason Week 2 usage summaries","Annex War Room research"],
+    "note": "Major Aug. 24 changes: Jeanty ankle; Love high ankle; Biadasz season-ending IR; Keaton Mitchell RB2; Nabers rehab progress; Kittle return; Tuten/Rodriguez committee."
+  },
+  "players": [
+    {"name":"Ashton Jeanty","team":"LV","pos":"RB","rank":20,"adp":"1.10","upside":91,"risk":34,"notes":"Sprained ankle with unclear return timetable; workload remains elite when healthy."},
+    {"name":"Jeremiyah Love","team":"ARI","pos":"RB","rank":34,"adp":"3.11","upside":94,"risk":39,"notes":"High-ankle sprain; out rest of preseason and could start slowly even if active Week 1."},
+    {"name":"Malik Nabers","team":"NYG","pos":"WR","rank":20,"adp":"2.6","upside":96,"risk":21,"notes":"ACL rehab trending positively; shed non-contact jersey and joined team drills."},
+    {"name":"Omarion Hampton","team":"LAC","pos":"RB","rank":14,"adp":"2.5","upside":94,"risk":25,"notes":"Still a breakout target, but Tyler Biadasz is out for the year and Keaton Mitchell is solidifying RB2 work."},
+    {"name":"Bhayshul Tuten","team":"JAX","pos":"RB","rank":42,"adp":"7.6","upside":84,"risk":40,"notes":"Jacksonville backfield looks committee-like; Chris Rodriguez has a legitimate lead-role case."},
+    {"name":"George Kittle","team":"SF","pos":"TE","rank":66,"adp":"12.2","upside":85,"risk":21,"notes":"Returned to practice from Achilles rehab; Week 1 outlook improved."},
+    {"name":"Keaton Mitchell","team":"LAC","pos":"RB","rank":47,"adp":"13.9","upside":86,"risk":22,"notes":"Preseason usage points to clear RB2 role behind Hampton; committee upside if role expands."}
+  ],
+  "rbCore": [
+    {"name":"Ashton Jeanty","team":"LV","rank":13,"ecr":15,"ol":20,"sos":31,"work":94,"receive":82,"td":77,"inj":59,"threat":24,"verdict":"fade","label":"ANKLE / COST WATCH","note":"Sprained ankle is not believed long-term, but timetable is unclear. Elite workload remains, while Mike Washington Jr. gains contingency value."},
+    {"name":"Omarion Hampton","team":"LAC","rank":7,"ecr":10,"ol":9,"sos":32,"work":89,"receive":76,"td":88,"inj":76,"threat":29,"verdict":"target","label":"TARGET — DOWN A NOTCH","note":"Still a breakout target, but center Tyler Biadasz is out for the season and Keaton Mitchell is emerging as the clear RB2."}
+  ],
+  "rbBackup": [
+    {"name":"Mike Washington Jr.","team":"LV","rank":"H1","ecr":55,"ol":20,"sos":31,"work":52,"receive":54,"td":66,"inj":91,"threat":90,"verdict":"backup","label":"JEANTY INSURANCE RISER","note":"Jeanty’s ankle sprain makes Washington the most important Raiders contingency back. Camp reports have been positive."},
+    {"name":"Tyler Allgeier","team":"ARI","rank":"H2","ecr":36,"ol":31,"sos":26,"work":66,"receive":45,"td":76,"inj":92,"threat":88,"verdict":"backup","label":"IMMEDIATE EARLY-SEASON UPSIDE","note":"Jeremiyah Love is out the rest of preseason with a high-ankle sprain. Allgeier is the favorite to lead if Love misses Week 1 or is eased back."},
+    {"name":"Keaton Mitchell","team":"LAC","rank":"H3","ecr":44,"ol":9,"sos":32,"work":58,"receive":62,"td":63,"inj":77,"threat":84,"verdict":"backup","label":"CLEAR RB2 / ROLE GROWTH","note":"Preseason usage indicates Mitchell is solidifying the RB2 job and could form more of a two-man rotation with Hampton than previously expected."},
+    {"name":"Chris Rodriguez Jr.","team":"JAX","rank":"H5","ecr":49,"ol":18,"sos":18,"work":61,"receive":38,"td":71,"inj":78,"threat":82,"verdict":"backup","label":"JAGUARS ROLE CHALLENGER","note":"Jacksonville appears headed toward a committee, and Rodriguez has a legitimate early-down/short-yardage case against Bhayshul Tuten."}
+  ],
+  "wrCore": [{"name":"Malik Nabers","team":"NYG","rank":11,"ecr":13,"target":99,"qb":74,"comp":96,"td":82,"dur":73,"breakout":97,"verdict":"target","label":"HEALTH TRENDING UP","note":"Shed the red non-contact jersey and participated in team drills. Week 1 readiness is increasingly plausible, though ACL recovery still adds risk."},{"name":"DeVonta Smith","team":"PHI","rank":14,"ecr":14,"target":89,"qb":87,"comp":84,"td":85,"dur":94,"breakout":91,"verdict":"target","label":"ROLE EXPANSION","note":"Returned to full practice and still has a clearer path to career-high volume after A.J. Brown’s departure."}],
+  "wrBreakout": [],
+  "qbCore": [{"name":"Justin Herbert","team":"LAC","rank":8,"ecr":8,"pass":93,"rush":68,"off":84,"dur":88,"vol":86,"verdict":"neutral","label":"FORMAT VALUE / OL WATCH","note":"Five-point passing TDs still help, but center Tyler Biadasz is out for the season, reducing the offensive-line improvement case."}],
+  "qbLate": [],
+  "teCore": [{"name":"George Kittle","team":"SF","rank":8,"ecr":8,"target":81,"off":92,"td":90,"dur":73,"edge":80,"verdict":"neutral","label":"REHAB TRENDING UP","note":"Returned to practice from Achilles rehab. Age still matters, but availability outlook improved materially."}],
+  "teLate": [], "dstData": [], "kickerData": []
+}
