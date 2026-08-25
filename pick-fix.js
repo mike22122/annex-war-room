@@ -4,29 +4,39 @@
     if(typeof window.setRefreshStatus==='function') window.setRefreshStatus(text,kind||'');
   }
 
+  // Daily news JSON and overall Top-150 ranking are intentionally separate.
+  // A daily player's generic `rank` field is NOT treated as an overall rank.
+  // Only an explicit `overallRank` may reorder the master board.
   function applyLatestPlayerUpdates(master,updates){
     if(!Array.isArray(updates)) return master;
-    let board=[...master];
+    let board=master.map(p=>({...p}));
+
+    // First merge non-ranking fields into players already on the Top 150.
     updates.forEach(u=>{
-      let idx=board.findIndex(p=>p.name===u.name);
-      if(idx>=0){
-        const old=board[idx];
-        const requestedRank=Number.isFinite(Number(u.rank))?Math.max(1,Math.min(150,Number(u.rank))):old.rank;
-        const merged={...old,...u,rank:requestedRank};
-        board.splice(idx,1);
-        board.splice(Math.min(requestedRank-1,board.length),0,merged);
-      }else if(Number.isFinite(Number(u.rank)) && Number(u.rank)<=150){
-        const requestedRank=Math.max(1,Math.min(150,Number(u.rank)));
-        board.splice(Math.min(requestedRank-1,board.length),0,{...u,rank:requestedRank});
-        if(board.length>150) board.pop();
-      }
+      const idx=board.findIndex(p=>p.name===u.name);
+      if(idx<0) return;
+      const {rank,overallRank,...safeUpdate}=u;
+      board[idx]={...board[idx],...safeUpdate,rank:board[idx].rank};
     });
+
+    // Then process only deliberate overall-ranking overrides.
+    const overrides=updates
+      .filter(u=>Number.isFinite(Number(u.overallRank)))
+      .sort((a,b)=>Number(a.overallRank)-Number(b.overallRank));
+
+    overrides.forEach(u=>{
+      let idx=board.findIndex(p=>p.name===u.name);
+      if(idx<0) return; // new players enter only during a full Top-150 rebuild
+      const player=board.splice(idx,1)[0];
+      const requested=Math.max(1,Math.min(150,Number(u.overallRank)));
+      board.splice(Math.min(requested-1,board.length),0,player);
+    });
+
     board=board.slice(0,150);
     board.forEach((p,i)=>p.rank=i+1);
     return board;
   }
 
-  // Replace the normal refresh with a master-board refresh.
   window.refreshLatestData = async function(){
     const btn=document.getElementById('refreshLatestBtn');
     try{
@@ -42,15 +52,14 @@
       let master=[...(p1.players||[]),...(p2.players||[]),...(p3.players||[])].sort((a,b)=>a.rank-b.rank);
       if(master.length!==150) throw new Error('Top 150 file is incomplete');
 
-      // Start with the full Top 150, then layer the newest JSON player/ranking changes on top.
+      // Layer injury/news attributes onto the master board without interpreting local rank as overall rank.
       master=applyLatestPlayerUpdates(master,base.players||[]);
       players.splice(0,players.length,...master);
 
-      // Apply detailed position-lab/news updates without merging players a second time.
+      // Position labs still receive all detailed daily updates.
       const detailed={...base,players:[]};
       if(typeof window.applyUpdatePayload==='function') window.applyUpdatePayload(detailed);
 
-      // Use the metadata from the newest JSON instead of a hard-coded date.
       dataMeta={...dataMeta,...(base.meta||{})};
       localStorage.setItem('annexWarRoomDataV1',JSON.stringify({meta:dataMeta,players,rbCore,rbBackup,wrCore,wrBreakout,qbCore,qbLate,teCore,teLate,dstData,kickerData}));
       if(typeof window.refreshFreshness==='function') window.refreshFreshness();
@@ -92,7 +101,6 @@
     }catch(err){console.error(err);alert('Could not record pick: '+err.message);}
   },true);
 
-  // The full rebuild uses a consensus market anchor, not a Yahoo-only feed. Keep labels honest.
   function relabel(){
     document.querySelectorAll('th').forEach(el=>{if(el.textContent.trim()==='Yahoo ADP')el.textContent='Market Slot';});
     document.querySelectorAll('.platformnote,.reason,.meta,.marketbox').forEach(el=>{
