@@ -1,0 +1,24 @@
+{
+  "schema": "annex-war-room-v1",
+  "meta": {
+    "updated": "2026-08-26",
+    "updatedLabel": "Aug. 26, 2026 — morning refresh",
+    "note": "Aug. 26 snapshot. Key changes: Puka Nacua remains out of team drills but has no reported setback; Breece Hall remains on track for Week 1; Malik Nabers continues strong ACL-rehab progression; Ashton Jeanty is on the mend from a lower-ankle sprain. Overall Top-150 ranks remain controlled by the master rankings files."
+  },
+  "players": [
+    {"name":"Puka Nacua","team":"LAR","pos":"WR","adp":"1.04","upside":98,"risk":28,"notes":"Psoas/groin soreness has kept him out of team drills for roughly two weeks. Side-field work continues with no reported setback; hold elite season-long valuation while monitoring return to full practice."},
+    {"name":"Ashton Jeanty","team":"LV","pos":"RB","adp":"1.10","upside":91,"risk":27,"notes":"Believed to have a lower ankle sprain rather than a high-ankle injury and described as on the mend. Week 1 remains uncertain, but current reporting does not indicate a long-term injury."},
+    {"name":"Breece Hall","team":"NYJ","pos":"RB","adp":"3.04","upside":91,"risk":25,"notes":"Groin injury remains a short-term concern, but Aaron Glenn has said Hall is on track for Week 1. Hall has been working on the sideline while the Jets take a cautious approach."},
+    {"name":"Malik Nabers","team":"NYG","pos":"WR","adp":"2.08","upside":96,"risk":18,"notes":"ACL rehab continues to trend strongly upward. Nabers shed the non-contact jersey, participated in team work and is increasingly expected to be available Week 1 barring a setback."}
+  ],
+  "rbCore": [],
+  "rbBackup": [],
+  "wrCore": [],
+  "wrBreakout": [],
+  "qbCore": [],
+  "qbLate": [],
+  "teCore": [],
+  "teLate": [],
+  "dstData": [],
+  "kickerData": []
+}
