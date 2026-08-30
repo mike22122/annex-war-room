@@ -90,6 +90,60 @@
     }
   };
 
+  // Realistic opponent simulator.
+  // The old version picked uniformly from the top 7 remaining players, which made
+  // elite players like Gibbs/Bijan/Chase fall far too often. This version keeps
+  // randomness, but anchors strongly to the master overall board and applies
+  // hard maximum slide ranges to prevent implausible falls.
+  function maxAllowedSlide(rank){
+    rank=Number(rank)||999;
+    if(rank<=5) return 4;
+    if(rank<=12) return 6;
+    if(rank<=30) return 9;
+    if(rank<=60) return 14;
+    return 20;
+  }
+
+  function weightedChoice(items,weightFn){
+    const weights=items.map(x=>Math.max(0.0001,Number(weightFn(x))||0.0001));
+    const total=weights.reduce((a,b)=>a+b,0);
+    let roll=Math.random()*total;
+    for(let i=0;i<items.length;i++){
+      roll-=weights[i];
+      if(roll<=0) return items[i];
+    }
+    return items[items.length-1];
+  }
+
+  window.simulateOpponentPick=function(){
+    const drafted=new Set((state&&Array.isArray(state.drafted)?state.drafted:[]).map(x=>x.name));
+    const available=players
+      .filter(p=>!drafted.has(p.name))
+      .filter(p=>Number.isFinite(Number(p.rank)))
+      .sort((a,b)=>Number(a.rank)-Number(b.rank));
+    if(!available.length) return;
+
+    const overallPick=(state&&Array.isArray(state.drafted)?state.drafted.length:0)+1;
+
+    // If a player has already slipped beyond a realistic ceiling, force the room
+    // to correct the board instead of allowing another random miss.
+    const overdue=available.filter(p=>overallPick>=Number(p.rank)+maxAllowedSlide(p.rank));
+    let choice;
+    if(overdue.length){
+      const pool=overdue.slice(0,2);
+      choice=weightedChoice(pool,p=>Math.exp(-0.9*(Number(p.rank)-Number(pool[0].rank))));
+    }else{
+      // Early rounds are tighter; later rounds gradually allow more variance.
+      const windowSize=overallPick<=12?6:overallPick<=36?8:10;
+      const pool=available.slice(0,windowSize);
+      const bestRank=Number(pool[0].rank);
+      const temperature=overallPick<=12?0.72:overallPick<=36?0.52:0.38;
+      choice=weightedChoice(pool,p=>Math.exp(-temperature*(Number(p.rank)-bestRank)));
+    }
+
+    if(choice && typeof window.draft==='function') window.draft(choice.name,false);
+  };
+
   // Reliable Draft/Gone capture.
   document.addEventListener('click',function(event){
     const btn=event.target.closest('button.smallbtn');
