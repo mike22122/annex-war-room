@@ -11,7 +11,6 @@
     if(!Array.isArray(updates)) return master;
     let board=master.map(p=>({...p}));
 
-    // First merge non-ranking fields into players already on the Top 150.
     updates.forEach(u=>{
       const idx=board.findIndex(p=>p.name===u.name);
       if(idx<0) return;
@@ -19,14 +18,13 @@
       board[idx]={...board[idx],...safeUpdate,rank:board[idx].rank};
     });
 
-    // Then process only deliberate overall-ranking overrides.
     const overrides=updates
       .filter(u=>Number.isFinite(Number(u.overallRank)))
       .sort((a,b)=>Number(a.overallRank)-Number(b.overallRank));
 
     overrides.forEach(u=>{
       let idx=board.findIndex(p=>p.name===u.name);
-      if(idx<0) return; // new players enter only during a full Top-150 rebuild
+      if(idx<0) return;
       const player=board.splice(idx,1)[0];
       const requested=Math.max(1,Math.min(150,Number(u.overallRank)));
       board.splice(Math.min(requested-1,board.length),0,player);
@@ -42,21 +40,31 @@
     try{
       if(btn) btn.disabled=true;
       status('Loading Top 150 + latest news…','busy');
-      const bust='?v='+Date.now();
+
+      const stamp=Date.now();
+      const rawBase='https://raw.githubusercontent.com/mike22122/annex-war-room/main/';
+      const fetchJson=async(file)=>{
+        const url=rawBase+file+'?v='+stamp;
+        const r=await fetch(url,{cache:'no-store'});
+        if(!r.ok) throw new Error(file+' '+r.status);
+        const text=await r.text();
+        try{return JSON.parse(text);}
+        catch(err){throw new Error(file+' JSON parse failed: '+err.message);}
+      };
+
       const [base,p1,p2,p3]=await Promise.all([
-        fetch('war-room-data-latest.json'+bust,{cache:'no-store'}).then(r=>{if(!r.ok)throw new Error('latest data '+r.status);return r.json()}),
-        fetch('rankings-top150-1.json'+bust,{cache:'no-store'}).then(r=>{if(!r.ok)throw new Error('rankings 1 '+r.status);return r.json()}),
-        fetch('rankings-top150-2.json'+bust,{cache:'no-store'}).then(r=>{if(!r.ok)throw new Error('rankings 2 '+r.status);return r.json()}),
-        fetch('rankings-top150-3.json'+bust,{cache:'no-store'}).then(r=>{if(!r.ok)throw new Error('rankings 3 '+r.status);return r.json()})
+        fetchJson('war-room-data-latest.json'),
+        fetchJson('rankings-top150-1.json'),
+        fetchJson('rankings-top150-2.json'),
+        fetchJson('rankings-top150-3.json')
       ]);
+
       let master=[...(p1.players||[]),...(p2.players||[]),...(p3.players||[])].sort((a,b)=>a.rank-b.rank);
       if(master.length!==150) throw new Error('Top 150 file is incomplete');
 
-      // Layer injury/news attributes onto the master board without interpreting local rank as overall rank.
       master=applyLatestPlayerUpdates(master,base.players||[]);
       players.splice(0,players.length,...master);
 
-      // Position labs still receive all detailed daily updates.
       const detailed={...base,players:[]};
       if(typeof window.applyUpdatePayload==='function') window.applyUpdatePayload(detailed);
 
@@ -82,7 +90,7 @@
     }
   };
 
-  // Reliable Draft/Gone capture. Reads the player name from the row instead of fragile quoted inline HTML.
+  // Reliable Draft/Gone capture.
   document.addEventListener('click',function(event){
     const btn=event.target.closest('button.smallbtn');
     if(!btn)return;
